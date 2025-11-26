@@ -1,0 +1,56 @@
+FROM node:21-alpine AS base
+WORKDIR /app
+COPY package*.json ./
+COPY . .
+
+# Build arguments for environment variables
+ARG NODE_ENV=production
+ARG NEXT_PUBLIC_BASE_URL
+ARG NEXT_PUBLIC_API_URL
+
+ENV NODE_ENV=${NODE_ENV}
+ENV NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+
+RUN npm install
+
+# Development stage
+FROM base AS development
+EXPOSE 3000
+CMD ["npm", "run", "dev"]
+
+# Production build stage
+FROM base AS builder
+WORKDIR /app
+ENV NODE_ENV=production
+
+RUN npm run build
+
+# Production runtime stage
+FROM node:21-alpine AS production
+WORKDIR /app
+
+# Copy package files
+COPY --from=builder /app/package*.json ./
+
+# Install only production dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy built application
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/next.config.ts ./next.config.ts
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nextjs -u 1001
+
+# Change ownership of the app directory
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT 3000
+ENV HOSTNAME 0.0.0.0
+
+CMD ["npm", "start"]

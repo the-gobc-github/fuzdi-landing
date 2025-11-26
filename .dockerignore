@@ -1,0 +1,53 @@
+# Docker
+.dockerignore
+Dockerfile*
+docker-compose*
+.docker
+
+# Git
+.git
+.gitignore
+README.md
+.github
+
+# Dependencies
+node_modules
+npm-debug.log*
+
+# Next.js
+.next
+.vercel
+out
+
+# Environment files
+.env*
+!.env.example
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Coverage
+coverage
+*.lcov
+
+# Testing
+.nyc_output
+
+# Build outputs
+dist
+build
+
+# Temporary files
+*.tmp
+*.temp

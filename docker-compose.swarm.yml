@@ -1,0 +1,23 @@
+# Production Swarm configuration
+services:
+  fuzdi-landing:
+    build:
+      target: production
+    image: ${DOCKER_USERNAME}/fuzdi-landing:latest
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.https.routers.fuzdi-landing.rule=Host(`fuzdi.fr`)'
+      - 'traefik.https.routers.fuzdi-landing.entrypoints=websecure'
+      - 'traefik.https.routers.fuzdi-landing.tls.certresolver=myresolver'
+    environment:
+      NODE_ENV: production
+    networks:
+      - webnet
+
+networks:
+  webnet:
+    external: true

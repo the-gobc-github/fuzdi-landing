@@ -6,7 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "test": "echo \"No tests specified\" && exit 0",
+    "docker:dev": "docker-compose up app",
+    "docker:prod": "docker-compose up app-prod",
+    "docker:build": "docker build -t fuzdi-landing .",
+    "docker:build-prod": "docker build --target production -t fuzdi-landing:prod ."
   },
   "dependencies": {
     "next": "16.0.3",
