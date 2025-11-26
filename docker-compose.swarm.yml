@@ -16,10 +16,10 @@ services:
         monitor: 60s
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.fuzdi-landing.rule=Host(`fuzdi.fr`)'
-      - 'traefik.http.routers.fuzdi-landing.entrypoints=websecure'
-      - 'traefik.http.routers.fuzdi-landing.tls.certresolver=myresolver'
-      - 'traefik.http.services.fuzdi-landing.loadbalancer.server.port=3000'
+      - 'traefik.https.routers.fuzdi-landing.rule=Host(`fuzdi.fr`)'
+      - 'traefik.https.routers.fuzdi-landing.entrypoints=websecure'
+      - 'traefik.https.routers.fuzdi-landing.tls.certresolver=myresolver'
+      - 'traefik.https.services.fuzdi-landing.loadbalancer.server.port=3000'
     environment:
       NODE_ENV: production
       PORT: 3000
