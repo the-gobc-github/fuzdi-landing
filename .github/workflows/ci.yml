@@ -27,7 +27,7 @@ jobs:
               with:
                   context: ./
                   push: true
-                  tags: ${{ secrets.DOCKER_USERNAME }}/fuzdi-landing:latest
+                  tags: thegobc/fuzdi-landing:latest
 
             - name: Copy docker-compose files to server
               uses: appleboy/scp-action@v0.1.7
@@ -54,4 +54,4 @@ jobs:
                       sleep 5
                       
                       # Force update to pull the new image
-                      docker service update --image ${{ secrets.DOCKER_USERNAME }}/fuzdi-landing:latest --force fuzdi-landing-stack_fuzdi-landing
+                      docker service update --image thegobc/fuzdi-landing:latest --force fuzdi-landing-stack_fuzdi-landing
