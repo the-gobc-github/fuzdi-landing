@@ -30,6 +30,9 @@ RUN npm run build
 FROM node:21-alpine AS production
 WORKDIR /app
 
+# Install wget for health checks
+RUN apk add --no-cache wget
+
 # Copy package files
 COPY --from=builder /app/package*.json ./
 
@@ -45,7 +48,8 @@ COPY --from=builder /app/next.config.ts ./next.config.ts
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nextjs -u 1001
 
-# Change ownership of the app directory
+# Change ownership of the app directory to nextjs user
+RUN chown -R nextjs:nodejs /app
 USER nextjs
 
 EXPOSE 3000
