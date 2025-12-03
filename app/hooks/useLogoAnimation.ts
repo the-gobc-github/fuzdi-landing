@@ -109,7 +109,7 @@ export function useLogoAnimation(): AnimationState {
     const currentTop = progress >= 1 ? headerTop : Math.max(animatedTop, headerTop);
 
     // Move from center position to header left position (vertically aligned with header logo)
-    const leftOffset = actualWindowWidth >= 768 ? 25 : 0; // Only add offset on tablet/desktop
+    const leftOffset = actualWindowWidth >= 768 ? 0 : 0; // Only add offset on tablet/desktop
     const startLeft = actualLogoInitialPos.left - (heroLogoSize / 2) + leftOffset;
     const currentLeft = progress >= 1 ? headerLeft : startLeft - (startLeft - headerLeft) * smoothProgress;
 
