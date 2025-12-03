@@ -32,17 +32,17 @@ export default function Navigation({ headerLogoOpacity }: NavigationProps) {
                 backdropFilter: showBackground ? 'blur(10px)' : 'blur(4px)'
             }}
         >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-2 flex items-center justify-between">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-2 flex items-center justify-between">
                 {/* Placeholder for header logo space - actual logo is the floating one */}
                 <div
-                    className="h-12 lg:h-20"
-                    style={{ width: '140px', opacity: headerLogoOpacity }}
+                    className="h-10 sm:h-12 lg:h-20"
+                    style={{ width: '120px', opacity: headerLogoOpacity }}
                 >
                     {/* Space reserved for floating logo */}
                 </div>
 
                 {/* Desktop Navigation */}
-                <ul className="hidden lg:flex items-center gap-8 xl:gap-12 text-white/90 text-base">
+                <ul className="hidden lg:flex items-center gap-6 xl:gap-8 text-white/90 text-sm xl:text-base">
                     {navLinks.map((link) => (
                         <li key={link.href}>
                             <a
@@ -57,20 +57,20 @@ export default function Navigation({ headerLogoOpacity }: NavigationProps) {
 
                 {/* Hamburger Menu Button */}
                 <button
-                    className="lg:hidden flex flex-col justify-center items-center w-10 h-10 relative z-50"
+                    className="lg:hidden flex flex-col justify-center items-center w-8 h-8 sm:w-10 sm:h-10 relative z-50"
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                     aria-label="Toggle menu"
                 >
                     <span
-                        className={`block w-6 h-0.5 bg-white transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-1.5' : ''
+                        className={`block w-5 sm:w-6 h-0.5 bg-white transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-1.5' : ''
                             }`}
                     />
                     <span
-                        className={`block w-6 h-0.5 bg-white my-1 transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''
+                        className={`block w-5 sm:w-6 h-0.5 bg-white my-1 transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''
                             }`}
                     />
                     <span
-                        className={`block w-6 h-0.5 bg-white transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-1.5' : ''
+                        className={`block w-5 sm:w-6 h-0.5 bg-white transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-1.5' : ''
                             }`}
                     />
                 </button>
@@ -82,12 +82,15 @@ export default function Navigation({ headerLogoOpacity }: NavigationProps) {
                     }`}
                 style={{ zIndex: 45 }}
             >
-                <ul className="flex flex-col items-center justify-center h-full gap-8 text-white text-xl">
-                    {navLinks.map((link) => (
-                        <li key={link.href}>
+                <ul className="flex flex-col items-center justify-center h-full gap-6 sm:gap-8 text-white text-lg sm:text-xl px-4">
+                    {navLinks.map((link, index) => (
+                        <li key={link.href} 
+                            className={`transform transition-all duration-500 ${isMenuOpen ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
+                            style={{ transitionDelay: `${index * 100}ms` }}
+                        >
                             <a
                                 href={link.href}
-                                className="hover:text-orange-400 transition-all duration-300 inline-block"
+                                className="hover:text-orange-400 transition-all duration-300 inline-block text-center"
                                 onClick={handleLinkClick}
                             >
                                 {link.label}

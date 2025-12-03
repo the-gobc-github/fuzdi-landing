@@ -3,7 +3,7 @@
 import Navigation from './components/Navigation';
 import FloatingLogo from './components/FloatingLogo';
 import HeroSection from './components/HeroSection';
-import AuditSection from './components/AuditSection';
+import ServiceSection from './components/ServiceSection';
 import ICPSection from './components/ICPSection';
 import { useLogoAnimation } from './hooks/useLogoAnimation';
 
@@ -39,8 +39,7 @@ export default function Home() {
         onInitialPosSet={setLogoInitialPos}
       />
 
-
-      <AuditSection />
+      <ServiceSection />
       <ICPSection />
     </div>
   );

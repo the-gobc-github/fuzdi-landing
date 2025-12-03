@@ -36,15 +36,15 @@ export default function HeroSection({ heroLogoSize, onLogoRefSet, onInitialPosSe
 
                 </p>
 
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8 sm:mt-12 animate-fade-in-up" style={{ animationDelay: '0.8s', opacity: 0 }}>
-                    <button className="px-6 py-3 bg-white text-black font-medium rounded-lg hover:bg-white/90 transition-all duration-300 min-w-[180px]">
+                <div className="flex flex-col lg:flex-row items-center justify-center gap-3 sm:gap-4 mt-8 sm:mt-12 animate-fade-in-up px-2" style={{ animationDelay: '0.8s', opacity: 0 }}>
+                    <button className="px-4 sm:px-6 py-3 bg-white text-black font-medium rounded-lg hover:bg-white/90 transition-all duration-300 min-w-[160px] sm:min-w-[180px] text-sm sm:text-base w-full lg:w-auto">
                         Demander un audit
                     </button>
-                    <button className="px-6 py-3 bg-transparent border border-white text-white font-medium rounded-lg hover:bg-white/10 transition-all duration-300 min-w-[180px]">
+                    <button className="px-4 sm:px-6 py-3 bg-transparent border border-white text-white font-medium rounded-lg hover:bg-white/10 transition-all duration-300 min-w-[160px] sm:min-w-[180px] text-sm sm:text-base w-full lg:w-auto">
                         Se former
                     </button>
-                    <button className="px-6 py-3 bg-transparent border border-white text-white font-medium rounded-lg hover:bg-white/10 transition-all duration-300 min-w-[180px]">
-                        Particper a la beta Fuzdi studio
+                    <button className="px-4 sm:px-6 py-3 bg-transparent border border-white text-white font-medium rounded-lg hover:bg-white/10 transition-all duration-300 min-w-[160px] sm:min-w-[180px] text-sm sm:text-base w-full lg:w-auto">
+                        Participer à la beta Fuzdi studio
                     </button>
                 </div>
             </div>

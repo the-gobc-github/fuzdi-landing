@@ -3,108 +3,161 @@
 import { useEffect, useRef, useState } from 'react';
 
 export default function ICPSection() {
-    const [isVisible, setIsVisible] = useState(false);
+    const [scrollProgress, setScrollProgress] = useState(0);
+    const [isMobile, setIsMobile] = useState(false);
     const sectionRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const currentSection = sectionRef.current;
+        const checkScreenSize = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        
+        checkScreenSize();
+        window.addEventListener('resize', checkScreenSize);
+        
+        return () => window.removeEventListener('resize', checkScreenSize);
+    }, []);
 
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    setIsVisible(entry.isIntersecting);
-                });
-            },
-            { threshold: 0.2 }
-        );
+    useEffect(() => {
+        const handleScroll = () => {
+            if (!sectionRef.current) return;
 
-        if (currentSection) {
-            observer.observe(currentSection);
-        }
+            const section = sectionRef.current;
+            const rect = section.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+
+            // Calculate how much of the section is visible
+            // Progress goes from 0 when section starts entering viewport to 1 when fully visible
+            const sectionTop = rect.top;
+            const sectionHeight = rect.height;
+
+            // Start animation when section is 20% visible, complete when 80% visible
+            const startPoint = windowHeight - (sectionHeight * 0.2);
+            const endPoint = windowHeight - (sectionHeight * 0.8);
+
+            let progress = 0;
+            if (sectionTop <= startPoint) {
+                progress = Math.min(1, (startPoint - sectionTop) / (startPoint - endPoint));
+            }
+
+            setScrollProgress(Math.max(0, Math.min(1, progress)));
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        handleScroll(); // Initial call
 
         return () => {
-            if (currentSection) {
-                observer.unobserve(currentSection);
-            }
+            window.removeEventListener('scroll', handleScroll);
         };
     }, []);
 
+    // Interpolate animations based on scroll progress
+    const leftColumnOpacity = scrollProgress;
+    const leftColumnTranslateY = (1 - scrollProgress) * (isMobile ? 100 : 200);
+
+    const rightColumnOpacity = Math.max(0, (scrollProgress - 0.2) * 1.25); // Starts later
+    const rightColumnTranslateY = (1 - Math.max(0, (scrollProgress - 0.2) * 1.25)) * (isMobile ? 100 : 200);
+
     return (
-        <section ref={sectionRef} id="icp" className="min-h-screen flex items-center justify-center px-8 py-24 bg-black/20">
+        <section ref={sectionRef} id="icp" className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
             <div className="max-w-7xl mx-auto w-full">
                 {/* Two Column Layout */}
-                <div className="grid md:grid-cols-2 gap-8 min-h-[600px]">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 min-h-[400px] sm:min-h-[500px] lg:min-h-[600px]">
                     {/* Left Column - Problèmes des créatifs pros avec l'IA */}
-                    <div className={`bg-gradient-to-br from-pink-100/90 to-pink-50/90 backdrop-blur-sm rounded-3xl border border-pink-300/40 hover:border-orange-500/50 transition-all duration-1000 ease-out p-8 md:p-12 flex flex-col justify-between ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`} style={{ transitionDelay: isVisible ? '0ms' : '0ms' }}>
+                    <div
+                        className="bg-white/10 backdrop-blur-xl rounded-[20px] sm:rounded-[24px] lg:rounded-[32px] border border-white/20 p-6 sm:p-8 lg:p-12 flex flex-col justify-between shadow-2xl hover:bg-white/15 transition-colors duration-500"
+                        style={{
+                            opacity: leftColumnOpacity,
+                            transform: `translateY(${leftColumnTranslateY}px)`,
+                            transition: 'none'
+                        }}
+                    >
                         <div>
-                            <h2 className="text-3xl md:text-4xl font-light text-black mb-8">
-                                Problèmes<br />
-                                des créatifs<br />
-                                pros avec l'IA
+                            {/* Icon */}
+                            <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-red-500/20 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-6 sm:mb-8 border border-red-300/30">
+                                <svg className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                </svg>
+                            </div>
+
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light text-white mb-8 sm:mb-10 lg:mb-12 leading-tight">
+                                Les défis<br />
+                                <span className="text-white/70">des créatifs</span>
                             </h2>
-                            <ul className="space-y-3 text-black/90 text-sm md:text-base">
-                                <li className="flex items-start">
-                                    <span className="mr-2">•</span>
-                                    <span>Outils dispersés, contraignants et peu paramétrables.</span>
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="mr-2">•</span>
-                                    <span>Accès laborieux à des cartes graphiques performantes</span>
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="mr-2">•</span>
-                                    <span>Crédits limités, coûteux et rapidement gaspillés</span>
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="mr-2">•</span>
-                                    <span>Reproductibilité, personnalisation et <span className="line-through">scalabilité</span> insuffisantes</span>
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="mr-2">•</span>
-                                    <span>Maturité technique inégale au sein des équipes</span>
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="mr-2">•</span>
-                                    <span>Modèles évoluant trop vite pour être suivis efficacement</span>
-                                </li>
-                            </ul>
+
+                            <div className="space-y-4 sm:space-y-5 lg:space-y-6">
+                                <div className="flex items-start space-x-3 sm:space-x-4">
+                                    <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
+                                    <p className="text-white/90 text-base sm:text-lg leading-relaxed">Outils dispersés et contraignants</p>
+                                </div>
+                                <div className="flex items-start space-x-3 sm:space-x-4">
+                                    <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
+                                    <p className="text-white/90 text-base sm:text-lg leading-relaxed">Accès limité aux GPU performants</p>
+                                </div>
+                                <div className="flex items-start space-x-3 sm:space-x-4">
+                                    <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
+                                    <p className="text-white/90 text-base sm:text-lg leading-relaxed">Crédits coûteux et limités</p>
+                                </div>
+                                <div className="flex items-start space-x-3 sm:space-x-4">
+                                    <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
+                                    <p className="text-white/90 text-base sm:text-lg leading-relaxed">Reproductibilité insuffisante</p>
+                                </div>
+                                <div className="flex items-start space-x-3 sm:space-x-4">
+                                    <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
+                                    <p className="text-white/90 text-base sm:text-lg leading-relaxed">Évolution technologique trop rapide</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     {/* Right Column - Comment Fuzdi répond */}
-                    <div className={`bg-gradient-to-br from-pink-200/90 to-pink-100/90 backdrop-blur-sm rounded-3xl border border-pink-300/40 hover:border-orange-500/50 transition-all duration-1000 ease-out p-8 md:p-12 flex flex-col justify-between ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`} style={{ transitionDelay: isVisible ? '200ms' : '0ms' }}>
+                    <div
+                        className="bg-white/10 backdrop-blur-xl rounded-[20px] sm:rounded-[24px] lg:rounded-[32px] border border-white/20 p-6 sm:p-8 lg:p-12 flex flex-col justify-between shadow-2xl hover:bg-white/15 transition-colors duration-500"
+                        style={{
+                            opacity: rightColumnOpacity,
+                            transform: `translateY(${rightColumnTranslateY}px)`,
+                            transition: 'none'
+                        }}
+                    >
                         <div>
-                            <h2 className="text-3xl md:text-4xl font-light text-black mb-8">
-                                Comment<br />
-                                Fuzdi<br />
-                                répond
+                            {/* Icon */}
+                            <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-green-500/20 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-6 sm:mb-8 border border-green-300/30">
+                                <svg className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light text-white mb-8 sm:mb-10 lg:mb-12 leading-tight">
+                                Notre<br />
+                                <span className="text-white/70">solution</span>
                             </h2>
-                            <ul className="space-y-3 text-black/90 text-sm md:text-base">
-                                <li className="flex items-start">
-                                    <span className="mr-2">•</span>
-                                    <span>Une plateforme unique responsable (ComfyUI) pensée pour les professionnels, avec des réglages plus précises et des fonctionnalités plus riches qu'une plateforme grand public en ligne.</span>
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="mr-2">•</span>
-                                    <span>Un accès aux meilleurs modèles open-source en streaming pour limiter les temps d'augmenter les quotas sur nos GPUs ou les vôtres</span>
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="mr-2">•</span>
-                                    <span>Tout les modèles par APIs disponibles en permanence au coût réel par génération. Fin les crédits et les limitations !</span>
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="mr-2">•</span>
-                                    <span>Un catalogue de workflows structurés et personnalisables, conçus pour être reproductibles, adaptables et extensibles selon les besoins</span>
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="mr-2">•</span>
-                                    <span>Des formations continues et des ressources pour monter en compétences, usages et bonnes pratiques pour déployer l'utilisation "tout en imaginant" et contrôler les résultats</span>
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="mr-2">•</span>
-                                    <span>Une veille continue et des mises à jour <del>rapides</del> liées pour rester agiles sur l'évolution rapide des technologies</span>
-                                </li>
-                            </ul>
+
+                            <div className="space-y-4 sm:space-y-5 lg:space-y-6">
+                                <div className="flex items-start space-x-3 sm:space-x-4">
+                                    <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
+                                    <p className="text-white/90 text-base sm:text-lg leading-relaxed">Plateforme unique et professionnelle</p>
+                                </div>
+                                <div className="flex items-start space-x-3 sm:space-x-4">
+                                    <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
+                                    <p className="text-white/90 text-base sm:text-lg leading-relaxed">Accès GPU en streaming performant</p>
+                                </div>
+                                <div className="flex items-start space-x-3 sm:space-x-4">
+                                    <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
+                                    <p className="text-white/90 text-base sm:text-lg leading-relaxed">Facturation au coût réel</p>
+                                </div>
+                                <div className="flex items-start space-x-3 sm:space-x-4">
+                                    <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
+                                    <p className="text-white/90 text-base sm:text-lg leading-relaxed">Workflows reproductibles</p>
+                                </div>
+                                <div className="flex items-start space-x-3 sm:space-x-4">
+                                    <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
+                                    <p className="text-white/90 text-base sm:text-lg leading-relaxed">Formation continue</p>
+                                </div>
+                                <div className="flex items-start space-x-3 sm:space-x-4">
+                                    <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
+                                    <p className="text-white/90 text-base sm:text-lg leading-relaxed">Veille technologique</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
