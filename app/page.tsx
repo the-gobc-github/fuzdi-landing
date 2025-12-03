@@ -16,6 +16,7 @@ export default function Home() {
     headerLogoOpacity,
     heroLogoOpacity,
     heroLogoSize,
+    isReady,
     setLogoInitialPos,
   } = useLogoAnimation();
 
@@ -29,6 +30,7 @@ export default function Home() {
         heroLogoOpacity={heroLogoOpacity}
         logoSize={logoSize}
         progress={progress}
+        isReady={isReady}
       />
 
       <HeroSection

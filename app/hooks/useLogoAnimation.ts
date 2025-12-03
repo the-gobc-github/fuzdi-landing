@@ -18,6 +18,7 @@ interface AnimationState {
     headerLogoOpacity: number;
     heroLogoOpacity: number;
     heroLogoSize: number;
+    isReady: boolean;
     setLogoInitialPos: (pos: LogoPosition) => void;
 }
 
@@ -49,12 +50,14 @@ const getHeaderPosition = (windowWidth: number): LogoPosition => {
 
 export function useLogoAnimation(): AnimationState {
     const [scrollY, setScrollY] = useState(0);
-    const [logoInitialPos, setLogoInitialPos] = useState<LogoPosition>({ top: -20, left: -100 });
-    const [windowWidth, setWindowWidth] = useState(0);
+    const [logoInitialPos, setLogoInitialPos] = useState<LogoPosition | null>(null);
+    const [windowWidth, setWindowWidth] = useState<number | null>(null);
+    const [isReady, setIsReady] = useState(false);
 
     useEffect(() => {
-        // Set initial width
+        // Set initial values on mount
         setWindowWidth(window.innerWidth);
+        setScrollY(window.scrollY);
 
         const handleScroll = () => {
             setScrollY(window.scrollY);
@@ -73,26 +76,41 @@ export function useLogoAnimation(): AnimationState {
         };
     }, []);
 
+    // Mark as ready once we have both windowWidth and logoInitialPos
+    useEffect(() => {
+        if (windowWidth !== null && logoInitialPos !== null) {
+            // Small delay to ensure layout is stable
+            const timer = requestAnimationFrame(() => {
+                setIsReady(true);
+            });
+            return () => cancelAnimationFrame(timer);
+        }
+    }, [windowWidth, logoInitialPos]);
+
+    // Use default values for SSR/initial render, actual values after mount
+    const actualWindowWidth = windowWidth ?? 1024; // Default to desktop
+    const actualLogoInitialPos = logoInitialPos ?? { top: 0, left: 0 };
+
     // Calculate animation progress
     const maxScroll = 600; // Longer distance for smoother transition
     const progress = Math.min(scrollY / maxScroll, 1);
     const smoothProgress = easeInOutCubic(progress);
 
     // Get responsive sizes
-    const { hero: heroLogoSize, header: headerLogoSize } = getResponsiveSizes(windowWidth);
+    const { hero: heroLogoSize, header: headerLogoSize } = getResponsiveSizes(actualWindowWidth);
     const logoSize = heroLogoSize - ((heroLogoSize - headerLogoSize) * smoothProgress);
 
     // Get header position
-    const { top: headerTop, left: headerLeft } = getHeaderPosition(windowWidth);
+    const { top: headerTop, left: headerLeft } = getHeaderPosition(actualWindowWidth);
 
     // Calculate position - move both vertically and horizontally to align with header logo
     // Once animation is complete (progress = 1), keep logo fixed at header position
-    const animatedTop = logoInitialPos.top - (logoInitialPos.top - headerTop) * smoothProgress - scrollY;
+    const animatedTop = actualLogoInitialPos.top - (actualLogoInitialPos.top - headerTop) * smoothProgress - scrollY;
     const currentTop = progress >= 1 ? headerTop : Math.max(animatedTop, headerTop);
 
     // Move from center position to header left position (vertically aligned with header logo)
-    const leftOffset = windowWidth >= 768 ? 25 : 0; // Only add offset on tablet/desktop
-    const startLeft = logoInitialPos.left - (heroLogoSize / 2) + leftOffset;
+    const leftOffset = actualWindowWidth >= 768 ? 25 : 0; // Only add offset on tablet/desktop
+    const startLeft = actualLogoInitialPos.left - (heroLogoSize / 2) + leftOffset;
     const currentLeft = progress >= 1 ? headerLeft : startLeft - (startLeft - headerLeft) * smoothProgress;
 
     // Single logo - always visible, no fading
@@ -111,6 +129,7 @@ export function useLogoAnimation(): AnimationState {
         headerLogoOpacity,
         heroLogoOpacity,
         heroLogoSize,
+        isReady,
         setLogoInitialPos: handleSetLogoInitialPos,
     };
 }

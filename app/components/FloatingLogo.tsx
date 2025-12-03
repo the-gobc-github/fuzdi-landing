@@ -8,6 +8,7 @@ interface FloatingLogoProps {
     heroLogoOpacity: number;
     logoSize: number;
     progress: number;
+    isReady: boolean;
 }
 
 export default function FloatingLogo({
@@ -15,16 +16,18 @@ export default function FloatingLogo({
     currentLeft,
     heroLogoOpacity,
     logoSize,
-    progress
+    progress,
+    isReady
 }: FloatingLogoProps) {
     return (
         <div
-            className="fixed z-50"
+            className="fixed z-50 transition-opacity duration-300"
             style={{
                 top: `${currentTop}px`,
                 left: `${currentLeft}px`,
                 pointerEvents: 'auto',
-                willChange: 'transform'
+                willChange: 'transform',
+                opacity: isReady ? 1 : 0
             }}
         >
             <Image
