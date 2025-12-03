@@ -1,28 +1,45 @@
-import Header from "./components/Header";
+'use client';
+
+import Navigation from './components/Navigation';
+import FloatingLogo from './components/FloatingLogo';
+import HeroSection from './components/HeroSection';
+import AuditSection from './components/AuditSection';
+import ICPSection from './components/ICPSection';
+import { useLogoAnimation } from './hooks/useLogoAnimation';
 
 export default function Home() {
+  const {
+    currentTop,
+    currentLeft,
+    logoSize,
+    progress,
+    headerLogoOpacity,
+    heroLogoOpacity,
+    heroLogoSize,
+    setLogoInitialPos,
+  } = useLogoAnimation();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-[#4a0a0a] to-[#8B4513] animate-gradient">
-      <Header />
+      <Navigation headerLogoOpacity={headerLogoOpacity} />
 
-      {/* Hero Section */}
-      <main className="min-h-screen flex flex-col items-center justify-center px-8 pt-32 pb-16">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-6xl md:text-7xl lg:text-6xl font-light text-white leading-tight mb-12 animate-fade-in-up" style={{ animationDelay: '0.2s', opacity: 0 }}>
-            L'intelligence artificielle,
-            <br />
-            taillée pour les créatifs.
-          </h1>
+      <FloatingLogo
+        currentTop={currentTop}
+        currentLeft={currentLeft}
+        heroLogoOpacity={heroLogoOpacity}
+        logoSize={logoSize}
+        progress={progress}
+      />
 
-          <p className="text-xl md:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.5s', opacity: 0 }}>
-            Nous formons les créatifs et proposons une interface
-            <br />
-            professionnelle unique donnant accès aux meilleurs modèles
-            <br />
-            d'IA créatives, propriétaires et open source.
-          </p>
-        </div>
-      </main>
+      <HeroSection
+        heroLogoSize={heroLogoSize}
+        onLogoRefSet={() => { }}
+        onInitialPosSet={setLogoInitialPos}
+      />
+
+
+      <AuditSection />
+      <ICPSection />
     </div>
   );
 }

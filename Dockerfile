@@ -1,4 +1,4 @@
-FROM node:21-alpine AS base
+FROM --platform=linux/amd64 node:21-alpine AS base
 WORKDIR /app
 COPY package*.json ./
 COPY . .
@@ -27,7 +27,7 @@ ENV NODE_ENV=production
 RUN npm run build
 
 # Production runtime stage
-FROM node:21-alpine AS production
+FROM --platform=linux/amd64 node:21-alpine AS production
 WORKDIR /app
 
 # Install wget for health checks
